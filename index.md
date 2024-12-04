@@ -668,21 +668,12 @@ Since we have observed a sudden jump in electricity prices during the summer tim
 ```python
 
 
-#first, we will plot the distribution of crimes in general. For our null hypothesis to be true,
-#we should expect to see that all the crime categories like "ASSAULT", "ROBBERY", etc. 
-# have a relatively similar distribution across months.
-
-#there is a suprising correlation between month and crime frequency. 
-#I think it has something to do with temperature and weather.
-#hotter months like june and july tend to have higher crime frequencies.
 
 
 plt.figure(figsize=(10, 6))
 
-# Count the number of entries for each month and ensure all months are represented
 monthly_counts = normalize(df['Month'].value_counts().reindex(range(1, 13), fill_value=0))
 
-# Plot the counts
 monthly_counts.plot(kind='bar', color='skyblue')
 plt.title('Crime Frequency by Month')
 plt.xlabel('Month')
@@ -715,14 +706,7 @@ We are going to compare the distribution of homicide frequencies with other crim
 ```python
 plt.figure(figsize=(10, 6))
 
-#Lets plot out the distribution of these 3 categories
-#I chose these three categories because I expect them to be
-#the most different from each other. 
 
-# I don't want to plot 'homicide' and 'assault' because they are similar crimes in nature.
-#Additionally, I want to normalize each category because there are far more 
-# narotics crimes than homicides, and I want to see the difference between
-# months more clearly.
 
 crime_types = ['HOMICIDE', 'NARCOTICS', 'MOTOR VEHICLE THEFT']  # Ive experimented with a few more, but these three look the best
 num_crimes = len(crime_types)
@@ -743,10 +727,7 @@ plt.tight_layout()
 plt.show()
 
 
-#It seems like homicide has a very clear correlation with month, far more than Narcotics or Motor Vehicle Theft
-#Conclusion:
-# it seems like depending on the crime, the montly frequency of said crime can very from 
-# category to category
+
 ```
 
 
@@ -848,7 +829,7 @@ data = {
 
 correlation_df = pd.DataFrame(data)
 
-# Calculate the correlation matrix
+#correlation matrix
 correlation_matrix = correlation_df.corr()
 
 plt.figure(figsize=(10, 8))
@@ -856,12 +837,7 @@ sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', square=True)
 plt.title('Correlation Matrix')
 plt.show()
 
-#Conclusion
-#looks like homicide frequency has a near perfect correlation with temperature!
-# The other things look very correlated too, but it might be the case that
-# they are more closely related to temperature than to homicide rates.
-# Its also completely possible that temperature and homicide rates are correlated
-# for a different reason that I had not thought about.
+
 
 ```
 
@@ -1793,13 +1769,6 @@ electricity_filtered = electricity[electricity['sectorName'] == 'all sectors']
 crime_months = crime_months.merge(electricity_filtered[['YearMonth', 'price']], on='YearMonth', how='left')  # Use merge instead of join for consistency
 crime_months = crime_months.dropna()  # Remove any rows with missing values
 
-#one potential drawback of this is that
-#CPI and electricity prices constantly increase with inflation, which might make our
-#predictions innacurate.
-#since CPI and electricity prices are expected to continue to grow(because of inflation)
-#any real-world use case of this prediction would have a high likelyhood
-#of seeing CPI and electricity prices as a record high number, which 
-#is sort of 'out of scope' of our training data.
 
 
 
@@ -2082,7 +2051,6 @@ Lets look at the relationship between each the label and each feature individual
 
 
 
-# Create scatterplots
 plt.figure(figsize=(15, 5))
 
 
@@ -2092,7 +2060,7 @@ plt.figure(figsize=(15, 5))
 # Scatterplot for AvgTemperature vs VIOLENT_CRIMES
 plt.subplot(1, 3, 1)
 plt.scatter(violent_crimes['AvgTemperature'], violent_crimes['VIOLENT_CRIMES'], alpha=0.5)
-# Fit line
+
 model_temp = LinearRegression()
 model_temp.fit(violent_crimes[['AvgTemperature']], violent_crimes['VIOLENT_CRIMES'])
 plt.plot(violent_crimes['AvgTemperature'], model_temp.predict(violent_crimes[['AvgTemperature']]), color='red')
@@ -2105,7 +2073,7 @@ plt.ylabel('VIOLENT_CRIMES')
 # Scatterplot for CPI vs VIOLENT_CRIMES
 plt.subplot(1, 3, 2)
 plt.scatter(violent_crimes['CPI'], violent_crimes['VIOLENT_CRIMES'], alpha=0.5, color='orange')
-# Fit line
+
 model_cpi = LinearRegression()
 model_cpi.fit(violent_crimes[['CPI']], violent_crimes['VIOLENT_CRIMES'])
 plt.plot(violent_crimes['CPI'], model_cpi.predict(violent_crimes[['CPI']]), color='red')
@@ -2118,7 +2086,7 @@ plt.ylabel('VIOLENT_CRIMES')
 # Scatterplot for price vs VIOLENT_CRIMES
 plt.subplot(1, 3, 3)
 plt.scatter(violent_crimes['price'], violent_crimes['VIOLENT_CRIMES'], alpha=0.5, color='green')
-# Fit line
+
 model_price = LinearRegression()
 model_price.fit(violent_crimes[['price']], violent_crimes['VIOLENT_CRIMES'])
 plt.plot(violent_crimes['price'], model_price.predict(violent_crimes[['price']]), color='red')
@@ -2143,7 +2111,6 @@ plt.show()
 
 
 ```python
-# Predictions
 temp_predictions = model_temp.predict(violent_crimes[['AvgTemperature']])
 cpi_predictions = model_cpi.predict(violent_crimes[['CPI']])
 price_predictions = model_price.predict(violent_crimes[['price']])
@@ -2158,7 +2125,6 @@ cpi_r2 = r2_score(violent_crimes['VIOLENT_CRIMES'], cpi_predictions)
 price_mse = mean_squared_error(violent_crimes['VIOLENT_CRIMES'], price_predictions)
 price_r2 = r2_score(violent_crimes['VIOLENT_CRIMES'], price_predictions)
 
-# Print accuracy metrics
 print(f"AvgTemperature Model - MSE: {temp_mse:.2f}, R^2: {temp_r2:.2f}\n")
 print(f"CPI Model - MSE: {cpi_mse:.2f}, R^2: {cpi_r2:.2f}\n")
 print(f"Price Model - MSE: {price_mse:.2f}, R^2: {price_r2:.2f}\n")
@@ -2195,18 +2161,12 @@ y = violent_crimes['VIOLENT_CRIMES']
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Create KNN model
 knn = KNeighborsClassifier(n_neighbors=5)
 
-# Fit the model
 knn.fit(X_train, y_train)
 
-# Make predictions
 y_pred = knn.predict(X_test)
 
-# # Print predicted values and actual values side by side
-# for predicted, actual in zip(y_pred, y_test):
-#     print(f"Predicted: {predicted}, Actual: {actual}")
 
 # Calculate average error
 average_error = abs(y_pred - y_test).mean()
@@ -3267,16 +3227,16 @@ y = df_filtered['Arrest']
 
 
 
-seed = 42 # always use this seed number as your random_state in the whole notebook
+seed = 42 
 test_size = 0.2
 
 # Randomly sample a specific number of rows
-max_samples = 100000  # Set the maximum number of samples you want
+max_samples = 100000  # Set the maximum number of samples you want. We will set it to 100k to save time
 X_sampled = X.sample(n=max_samples, random_state=seed)  # Randomly sample max_samples rows
 y_sampled = y.loc[X_sampled.index]  # Get the corresponding y values
 
 
-# Now split the sampled dataset
+# split the sampled dataset
 X_train, X_test, y_train, y_test = train_test_split(X_sampled, y_sampled, test_size=test_size, random_state=seed, shuffle=True)
 #scale so that months are between 0 and 1, not sure if this matters or not
 scaler = StandardScaler()
@@ -3380,7 +3340,7 @@ best_model = grid_search.best_estimator_
 
 y_pred = best_model.predict(X_test_scaled)
 accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy:.2f}") # Your accuracy table header here
+print(f"Accuracy: {accuracy:.2f}") 
 print(classification_report(y_test, y_pred)) 
 
 
